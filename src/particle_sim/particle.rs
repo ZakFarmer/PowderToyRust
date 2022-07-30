@@ -1,4 +1,14 @@
 #[derive(Clone, Debug)]
+pub enum ParticleVariant {
+    WOOD,
+    STNE,
+    URAN,
+    PLUT,
+    DEUT,
+    C4,
+}
+
+#[derive(Clone, Debug)]
 pub struct Particle {
     pub x: f32,
     pub y: f32,
@@ -7,11 +17,12 @@ pub struct Particle {
     ax: f32,
     ay: f32,
     radius: f32,
+    variant: ParticleVariant,
     pub color: [u8; 4],
 }
 
 impl Particle {
-    pub fn new(x: f32, y: f32, vx: f32, vy: f32, color: [u8; 4]) -> Self {
+    pub fn new(x: f32, y: f32, vx: f32, vy: f32, variant: ParticleVariant, color: [u8; 4]) -> Self {
         Particle {
             x,
             y,
@@ -20,6 +31,7 @@ impl Particle {
             ax: 0.0,
             ay: 0.0,
             radius: 4.0,
+            variant,
             color,
         }
     }

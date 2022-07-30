@@ -6,9 +6,9 @@ mod particle_sim;
 pub use crate::particle_sim::particle::Particle;
 pub use crate::particle_sim::world::World;
 
-use log::{error};
-use pixels::{Error, Pixels, SurfaceTexture};
+use log::error;
 use pixels::wgpu::Color;
+use pixels::{Error, Pixels, SurfaceTexture};
 use winit::{
     dpi::LogicalSize,
     event::{Event, VirtualKeyCode},
@@ -42,7 +42,7 @@ fn main() -> Result<(), Error> {
         let scaled_size = LogicalSize::new(WIDTH as f64 * 2.0, HEIGHT as f64 * 2.0);
 
         WindowBuilder::new()
-            .with_title("Particle Sim in Rust")
+            .with_title("Powder Toy in Rust")
             .with_inner_size(scaled_size)
             .with_min_inner_size(size)
             .build(&event_loop)
@@ -61,8 +61,7 @@ fn main() -> Result<(), Error> {
     let mut paused = false;
 
     event_loop.run(move |event, _, control_flow| {
-         if let Event::RedrawRequested(_) = event {
-
+        if let Event::RedrawRequested(_) = event {
             // Clear the pixel buffer
             let frame = pixels.get_frame();
             for pixel in frame.chunks_exact_mut(4) {
@@ -72,8 +71,8 @@ fn main() -> Result<(), Error> {
                 pixel[3] = 0xff; // A
             }
 
-             world.draw(pixels.get_frame());
-             if pixels
+            world.draw(pixels.get_frame());
+            if pixels
                 .render()
                 .map_err(|e| error!("pixels.render() failed: {}", e))
                 .is_err()
@@ -81,7 +80,7 @@ fn main() -> Result<(), Error> {
                 *control_flow = ControlFlow::Exit;
                 return;
             }
-         }
+        }
 
         if input.update(&event) {
             if input.key_pressed(VirtualKeyCode::Escape) {
@@ -92,11 +91,8 @@ fn main() -> Result<(), Error> {
             if input.key_pressed(VirtualKeyCode::Space) {
                 paused = !paused;
             }
-
-            
         }
         world.update();
         window.request_redraw();
     });
 }
-
