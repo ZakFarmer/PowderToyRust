@@ -26,7 +26,12 @@ impl World {
         let mut collider_set: ColliderSet = ColliderSet::new();
         let mut rigid_body_set: RigidBodySet = RigidBodySet::new();
 
-        for n in 1..10 {
+        let ground_collider = ColliderBuilder::cuboid(crate::WIDTH as f32, 0.1)
+            .translation(vector![0.0, crate::HEIGHT as f32])
+            .build();
+        collider_set.insert(ground_collider);
+
+        for n in 1..20 {
             new_particles.push(Particle::new(
                 (rng.gen_range(4..crate::WIDTH - 4)) as f32,
                 (rng.gen_range(4..crate::HEIGHT - 4)) as f32,
