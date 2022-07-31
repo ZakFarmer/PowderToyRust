@@ -19,6 +19,20 @@ pub struct World {
 }
 
 impl World {
+    pub fn add_particle(&mut self, x: f32, y: f32) -> bool {
+        self.particles.push(Particle::new(
+            x,
+            y,
+            0.0,
+            0.0,
+            ParticleVariant::WOOD,
+            crate::COLORS[1],
+            &mut self.collider_set,
+            &mut self.rigid_body_set,
+        ));
+
+        true
+    }
     pub fn new() -> Self {
         let mut new_particles: Vec<Particle> = Vec::new();
         let mut rng = rand::thread_rng();

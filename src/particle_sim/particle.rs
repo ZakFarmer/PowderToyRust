@@ -37,7 +37,7 @@ impl Particle {
         collider_set: &mut ColliderSet,
         rigid_body_set: &mut RigidBodySet,
     ) -> Self {
-        let collider: Collider = ColliderBuilder::ball(1.0).restitution(0.7).build();
+        let collider: Collider = ColliderBuilder::ball(0.75).restitution(0.7).build();
         let rigid_body: RigidBody = RigidBodyBuilder::dynamic()
             .translation(vector![x as f32, y as f32])
             .build();

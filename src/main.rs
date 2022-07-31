@@ -83,6 +83,14 @@ fn main() -> Result<(), Error> {
         }
 
         if input.update(&event) {
+            if input.mouse_held(1) {
+                let (mouse_x, mouse_y) = input.mouse().expect("Couldn't get mouse position!");
+
+                //println!("Mouse X: {}, Mouse Y: {}", mouse_x, mouse_y);
+
+                world.add_particle(mouse_x, mouse_y);
+            }
+
             if input.key_pressed(VirtualKeyCode::Escape) {
                 *control_flow = ControlFlow::Exit;
                 return;
