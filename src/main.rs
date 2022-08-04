@@ -3,12 +3,12 @@
 
 mod particle_sim;
 
-pub use crate::particle_sim::particle::Particle;
+pub use crate::particle_sim::particle::{Particle, ParticleVariant};
 pub use crate::particle_sim::world::World;
 
 use log::error;
-use pixels::wgpu::Color;
 use pixels::{Error, Pixels, SurfaceTexture};
+use winit::window::Window;
 use winit::{
     dpi::LogicalSize,
     event::{Event, VirtualKeyCode},
@@ -17,11 +17,8 @@ use winit::{
 };
 use winit_input_helper::WinitInputHelper;
 
-const HEIGHT: u32 = 400;
-const WIDTH: u32 = 400;
-
-const DAMPING: f32 = 1.00004;
-const TIMESCALE: f32 = 0.02;
+const HEIGHT: u32 = 200;
+const WIDTH: u32 = 200;
 
 const LIGHT_PINK: [u8; 4] = [0xf2, 0x93, 0xb1, 0xff];
 const PINK: [u8; 4] = [0xed, 0x51, 0x81, 0xff];
@@ -34,10 +31,19 @@ const ORANGE: [u8; 4] = [0xf8, 0xdb, 0x81, 0xff];
 const COLORS: [[u8; 4]; 7] = [LIGHT_PINK, PINK, RED, BLUE, YELLOW, DARK_YELLOW, ORANGE];
 
 fn main() -> Result<(), Error> {
+    let variants: Vec<ParticleVariant> = vec![
+        ParticleVariant::C4,
+        ParticleVariant::DEUT,
+        ParticleVariant::PLUT,
+        ParticleVariant::STNE,
+        ParticleVariant::URAN,
+        ParticleVariant::WOOD,
+    ];
+
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new(); // Why is this mutable?
 
-    let window = {
+    let window: Window = {
         let size = LogicalSize::new(WIDTH as f64 / 2.0, HEIGHT as f64 / 2.0);
         let scaled_size = LogicalSize::new(WIDTH as f64 * 2.0, HEIGHT as f64 * 2.0);
 
@@ -59,6 +65,11 @@ fn main() -> Result<(), Error> {
 
     let mut world = World::new();
     let mut paused = false;
+
+    let mut brush_size: i8 = 1;
+
+    let selected_particle: ParticleVariant = ParticleVariant::C4;
+    let mut selected_particle_index: i8 = 0;
 
     event_loop.run(move |event, _, control_flow| {
         if let Event::RedrawRequested(_) = event {
@@ -86,9 +97,57 @@ fn main() -> Result<(), Error> {
             if input.mouse_held(1) {
                 let (mouse_x, mouse_y) = input.mouse().expect("Couldn't get mouse position!");
 
-                //println!("Mouse X: {}, Mouse Y: {}", mouse_x, mouse_y);
+                for x in 0..brush_size {
+                    for y in 0..brush_size {
+                        world.add_particle(
+                            mouse_x / 2.0 + x as f32,
+                            mouse_y / 2.0 + y as f32,
+                            variants[selected_particle_index as usize],
+                        );
+                    }
+                }
+            }
 
-                world.add_particle(mouse_x, mouse_y);
+            if input.key_pressed(VirtualKeyCode::Comma) {
+                if selected_particle_index == 0 {
+                    selected_particle_index = 5; // Wrap back around to end of list
+                } else {
+                    selected_particle_index -= 1;
+                }
+
+                let element_string = match variants[selected_particle_index as usize] {
+                    ParticleVariant::C4 => "C4",
+                    ParticleVariant::DEUT => "DEUT",
+                    ParticleVariant::PLUT => "PLUT",
+                    ParticleVariant::STNE => "STNE",
+                    ParticleVariant::URAN => "URAN",
+                    ParticleVariant::WOOD => "WOOD",
+                };
+
+                println!("Switched to element: {}", element_string);
+            } else if input.key_pressed(VirtualKeyCode::Period) {
+                if selected_particle_index == 5 {
+                    selected_particle_index = 0; // Wrap back around to start of list
+                } else {
+                    selected_particle_index += 1;
+                }
+            }
+
+            if input.key_pressed(VirtualKeyCode::O) {
+                if brush_size != 1 {
+                    brush_size -= 1;
+                }
+
+                println!("Brush size: {}", brush_size);
+            } else if input.key_pressed(VirtualKeyCode::P) {
+                if brush_size != 20 {
+                    brush_size += 1;
+                }
+                println!("Brush size: {}", brush_size);
+            }
+
+            if input.key_pressed(VirtualKeyCode::R) {
+                world.clear_particles();
             }
 
             if input.key_pressed(VirtualKeyCode::Escape) {
@@ -96,7 +155,7 @@ fn main() -> Result<(), Error> {
                 return;
             }
 
-            if input.key_pressed(VirtualKeyCode::Space) {
+            if input.key_pressed(winit::event::VirtualKeyCode::Space) {
                 paused = !paused;
             }
         }
