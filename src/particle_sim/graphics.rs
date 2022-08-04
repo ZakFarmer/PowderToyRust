@@ -1,3 +1,6 @@
+// Graphics module for the particle simulation.
+// Based on Pixels example project "Invaders"
+
 use std::rc::Rc;
 
 use line_drawing::Bresenham;
@@ -56,7 +59,7 @@ impl Drawable for Sprite {
 }
 
 /// Blit a drawable to the pixel buffer.
-pub(crate) fn blit<S>(screen: &mut [u8], dest: &Point, sprite: &S, color: [u8; 4])
+pub(crate) fn blit<S>(screen: &mut [u8], dest: &Point, sprite: &S, colour: [u8; 4])
 where
     S: Drawable,
 {
@@ -66,18 +69,29 @@ where
         return;
     }
 
+    let pixels = sprite.pixels();
     let width = sprite.width() * 4;
 
-    for y in 0..1 {
+    let mut s = 0;
+    for y in 0..sprite.height() {
         let i = dest.x * 4 + dest.y * crate::WIDTH as usize * 4 + y * crate::WIDTH as usize * 4;
 
+        // Bit of a hacky way to get force the sprite to be drawn with the specified colour - doesn't support transparency only solid colours.
+        let new_pixels = [
+            colour[0], colour[1], colour[2], colour[3], colour[0], colour[1], colour[2], colour[3],
+            colour[0], colour[1], colour[2], colour[3], colour[0], colour[1], colour[2], colour[3],
+        ];
+
         // Merge pixels from sprite into screen
-        let zipped = screen[i..i + width].iter_mut().zip(&color);
+        let zipped = screen[i..i + width].iter_mut().zip(&new_pixels[0..width]);
+
         for (left, &right) in zipped {
             if right > 0 {
                 *left = right;
             }
         }
+
+        s += width;
     }
 }
 

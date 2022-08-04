@@ -68,8 +68,7 @@ fn main() -> Result<(), Error> {
 
     let mut brush_size: i8 = 1;
 
-    let selected_particle: ParticleVariant = ParticleVariant::C4;
-    let mut selected_particle_index: i8 = 0;
+    let mut selected_particle_index: i8 = 2;
 
     event_loop.run(move |event, _, control_flow| {
         if let Event::RedrawRequested(_) = event {
@@ -100,8 +99,8 @@ fn main() -> Result<(), Error> {
                 for x in 0..brush_size {
                     for y in 0..brush_size {
                         world.add_particle(
-                            mouse_x / 2.0 + x as f32,
-                            mouse_y / 2.0 + y as f32,
+                            mouse_x / 4.0 + x as f32,
+                            mouse_y / 4.0 + y as f32,
                             variants[selected_particle_index as usize],
                         );
                     }

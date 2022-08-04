@@ -1,3 +1,5 @@
+// Based on Pixels example project "Invaders"
+
 use std::collections::HashMap;
 use std::io::Cursor;
 use std::rc::Rc;

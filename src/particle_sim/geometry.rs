@@ -1,4 +1,5 @@
 //! Simple geometry primitives.
+// Based on Pixels example project "Invaders"
 
 use super::graphics::Drawable;
 

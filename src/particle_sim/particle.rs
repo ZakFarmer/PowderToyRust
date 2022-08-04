@@ -46,9 +46,9 @@ impl Particle {
             ParticleVariant::WOOD => PhysicsType::STATIC,
         };
 
-        let collider: Collider = ColliderBuilder::ball(0.9)
+        let collider: Collider = ColliderBuilder::cuboid(1.1, 1.1)
             .active_events(ActiveEvents::COLLISION_EVENTS)
-            .mass(0.1)
+            .mass(200.0)
             .restitution(0.7)
             .build();
 
