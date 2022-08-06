@@ -54,7 +54,14 @@ impl World {
         let mut new_particles: Vec<Particle> = Vec::new();
         let mut rng = rand::thread_rng();
 
+        let mut broad_phase: BroadPhase = BroadPhase::new();
+        let mut ccd_solver: CCDSolver = CCDSolver::new();
         let mut collider_set: ColliderSet = ColliderSet::new();
+        let mut impulse_joint_set: ImpulseJointSet = ImpulseJointSet::new();
+        let mut island_manager: IslandManager = IslandManager::new();
+        let mut multibody_joint_set: MultibodyJointSet = MultibodyJointSet::new();
+        let mut narrow_phase: NarrowPhase = NarrowPhase::new();
+        let mut physics_pipeline: PhysicsPipeline = PhysicsPipeline::new();
         let mut rigid_body_set: RigidBodySet = RigidBodySet::new();
 
         let ground_collider = ColliderBuilder::cuboid(crate::WIDTH as f32, 0.1)
@@ -74,6 +81,10 @@ impl World {
         collider_set.insert(right_wall_collider);
 
         let particle_sprite = Sprite::new(&assets, crate::particle_sim::graphics::Frame::Particle);
+
+        let mut integration_parameters = IntegrationParameters::default();
+
+        integration_parameters.dt = 1.0 / 45.0;
 
         /*let (collision_send, collision_recv) = crossbeam::channel::unbounded();
         let (contact_force_send, contact_force_recv) = crossbeam::channel::unbounded();
@@ -95,14 +106,14 @@ impl World {
             particles: new_particles.to_vec(),
             rigid_body_set,
             collider_set,
-            integration_parameters: IntegrationParameters::default(),
-            physics_pipeline: PhysicsPipeline::new(),
-            island_manager: IslandManager::new(),
-            broad_phase: BroadPhase::new(),
-            narrow_phase: NarrowPhase::new(),
-            impulse_joint_set: ImpulseJointSet::new(),
-            multibody_joint_set: MultibodyJointSet::new(),
-            ccd_solver: CCDSolver::new(),
+            integration_parameters,
+            physics_pipeline,
+            island_manager,
+            broad_phase,
+            narrow_phase,
+            impulse_joint_set,
+            multibody_joint_set,
+            ccd_solver,
             physics_hooks: (),
             event_handler: (),
         }

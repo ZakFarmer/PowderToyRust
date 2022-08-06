@@ -23,5 +23,8 @@ winit_input_helper = "0.12"
 [profile.dev.package.rapier2d]
 opt-level = 3
 
+[profile.dev.package.rapier3d]
+opt-level = 3
+
 [profile.release]
 codegen-units = 1

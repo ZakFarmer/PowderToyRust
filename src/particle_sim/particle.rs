@@ -46,17 +46,19 @@ impl Particle {
             ParticleVariant::WOOD => PhysicsType::STATIC,
         };
 
-        let collider: Collider = ColliderBuilder::cuboid(1.1, 1.1)
-            .active_events(ActiveEvents::COLLISION_EVENTS)
-            .mass(200.0)
-            .restitution(0.7)
+        let collider: Collider = ColliderBuilder::cuboid(0.5, 0.5)
+            //.active_events(ActiveEvents::COLLISION_EVENTS)
+            .mass(1.0)
+            .restitution(0.0)
             .build();
 
         let rigid_body: RigidBody = match physics_type {
             PhysicsType::DYNAMIC => RigidBodyBuilder::dynamic()
+                .lock_rotations()
                 .translation(vector![x as f32, y as f32])
                 .build(),
             PhysicsType::STATIC => RigidBodyBuilder::fixed()
+                .lock_rotations()
                 .translation(vector![x as f32, y as f32])
                 .build(),
         };
@@ -77,9 +79,22 @@ impl Particle {
     }
 
     pub fn update(&mut self, rigid_body_set: &mut RigidBodySet) {
-        let particle_body = &rigid_body_set[self.body_handle];
+        let particle_body = &mut rigid_body_set[self.body_handle];
 
         self.x = particle_body.translation().x;
         self.y = particle_body.translation().y;
+
+        if (particle_body.linvel().x.abs() < 0.01) && (particle_body.linvel().y.abs() == 0.01) {
+            /*rigid_body_set.remove(
+                self.body_handle,
+                self.island_manager,
+                self.collider_set,
+                self.impulse_joint_set,
+                self.multibody_joint_set,
+                false,
+            );*/
+            particle_body.reset_forces(false);
+            particle_body.sleep();
+        }
     }
 }
